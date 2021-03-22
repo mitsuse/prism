@@ -1,3 +1,3 @@
 # Prism
 
-An ObservedObject provider for MVVM in SwiftUI.
+An ObservableObject provider for MVVM in SwiftUI.
