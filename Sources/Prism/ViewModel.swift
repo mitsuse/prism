@@ -6,7 +6,7 @@ public protocol ViewModel: ObservableObject where Property: Identifiable {
 
     var property: Property { get }
 
-    func callAsFunction(_ action: Action)
+    func callAsFunction(_ action: Action) async
     func bind(to id: Property.ID)
 }
 
@@ -18,7 +18,7 @@ extension ViewModel {
 
 public final class AnyViewModel<Property, Action>: ViewModel where Property: Identifiable {
     private let propertyGetter: () -> Property
-    private let executeMethod: (Action) -> Void
+    private let executeMethod: (Action) async -> Void
     private let bindToMethod: (Property.ID) -> Void
 
     public var property: Property {
@@ -31,8 +31,8 @@ public final class AnyViewModel<Property, Action>: ViewModel where Property: Ide
         self.bindToMethod = viewModel.bind
     }
 
-    public func callAsFunction(_ action: Action) {
-        executeMethod(action)
+    public func callAsFunction(_ action: Action) async {
+        await executeMethod(action)
     }
 
     public func bind(to id: Property.ID) {
