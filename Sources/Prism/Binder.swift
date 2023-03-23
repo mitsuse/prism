@@ -7,30 +7,30 @@ public final class Binder: ObservableObject {
     }
 
     public func register<VM>(_ viewModel: @autoclosure @escaping () -> VM) -> Binder where VM: ViewModel {
-        registration[Key(propertyType: VM.Property.self, actionType: VM.Action.self)] = { viewModel().typeErased }
+        registration[Key(propertyType: VM.Prop.self, actionType: VM.Action.self)] = { viewModel().typeErased }
         return self
     }
 
-    public func resolve<Property, Action>(_: Property.Type, _: Action.Type) -> AnyViewModel<Property, Action> {
-        let key = Key(propertyType: Property.self, actionType: Action.self)
+    public func resolve<Prop, Action>(_: Prop.Type, _: Action.Type) -> AnyViewModel<Prop, Action> {
+        let key = Key(propertyType: Prop.self, actionType: Action.self)
         switch registration[key] {
         case let .some(viewModel):
-            return viewModel() as! AnyViewModel<Property, Action>
+            return viewModel() as! AnyViewModel<Prop, Action>
         case .none:
-            fatalError("View model is not registered: State == \(Property.self), Action == \(Action.self)")
+            fatalError("View model is not registered: Prop == \(Prop.self), Action == \(Action.self)")
         }
     }
 
     @discardableResult
-    public func bind<State, Action, Content>(
-        _: State.Type,
+    public func bind<Prop, Action, Content>(
+        _: Prop.Type,
         _: Action.Type,
-        _ id: State.ID,
-        @ViewBuilder _ build: @escaping (AnyViewModel<State, Action>) -> Content
-    ) -> PropertyBinding<State, Action, Content> where Content: View {
-        let viewModel = resolve(State.self, Action.self)
+        _ id: Prop.ID,
+        @ViewBuilder _ build: @escaping (AnyViewModel<Prop, Action>) -> Content
+    ) -> PropBinding<Prop, Action, Content> where Content: View {
+        let viewModel = resolve(Prop.self, Action.self)
         viewModel.bind(to: id)
-        return PropertyBinding(viewModel, build)
+        return PropBinding(viewModel, build)
     }
 }
 
